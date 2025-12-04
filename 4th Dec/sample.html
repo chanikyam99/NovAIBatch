@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+
+        /* # -> element id */
+        /* . -> class */
+        #grandParent {
+            background-color: aquamarine;
+            height: 100px;
+            width: 100px;
+        }
+
+        #parent {
+            background-color: blueviolet;
+            height: 75px;
+            width: 75px;
+        }
+
+        #child {
+            background-color: red;
+            height: 50px;
+            width: 50px;
+        }
+    </style>
+</head>
+<body id="body">
+    <!-- 3 Nested divs -->
+    <div id="grandParent">
+        <div id="parent">
+            <div id="child">
+
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    let grandParent = document.getElementById('grandParent')
+    let parent = document.getElementById('parent')
+    let child = document.getElementById('child')
+    // let body = document.getElementById('body')
+
+    // console.log(grandParent)
+    // console.log(parent)
+    // console.log(child)
+
+    grandParent.addEventListener(
+        'click', 
+        function() {
+            console.log("Grand Parent clicked")
+        },
+        true
+    )
+
+    //useCapture flag. The default value of this flag is false.
+    //By default, Bubbling happens.
+    //If we pass the flag value as true, then Capturing happens.
+
+    parent.addEventListener('click', 
+        function() {
+            console.log("Parent clicked")
+        }
+    )
+
+    child.addEventListener(
+        'click', 
+        function() {
+            console.log("Child clicked")
+        }
+    )
+
+    // body.addEventListener('click', function() {
+    //     console.log("Body clicked")
+    // })
+</script>
+</html>
