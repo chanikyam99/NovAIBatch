@@ -14,6 +14,8 @@ const unlockClass = 'fa-lock-open'
 let ticketColor = 'lightpink'
 let colors = ['lightpink', 'lightgreen', 'lightblue', 'black']
 
+let ticketsArray = []
+
 //If user is clicking on add-btn, then the modal should pop-up
 addBtn.addEventListener('click', function() {
     //! -> reverses the value, if it is TRUE, it will become false and vice-vera.
@@ -32,35 +34,33 @@ addBtn.addEventListener('click', function() {
 modalCont.addEventListener('keydown', function(event) {
     if(event.key == "Shift") {
         //Create a ticket.
-        let ticketCont = document.createElement('div')
-        ticketCont.setAttribute("class", "ticket-cont")
+        // let ticketCont = document.createElement('div')
+        // ticketCont.setAttribute("class", "ticket-cont")
 
         let ticketId = shortid() // UUID - Universally Unique Identifiers.
 
         //Get the task description from the text Area.
         let taskText = taskArea.value 
 
-        ticketCont.innerHTML = `
-            <div class="ticket-color" style="background-color: ${ticketColor}"></div>
-            <div class="ticket-id">${ticketId}</div>
-            <div class="task-area">${taskText}</div>
-            <div class="ticket-lock">
-                <i class="fa-solid fa-lock"></i>
-            </div>
-        `
+        // ticketCont.innerHTML = `
+        //     <div class="ticket-color" style="background-color: ${ticketColor}"></div>
+        //     <div class="ticket-id">${ticketId}</div>
+        //     <div class="task-area">${taskText}</div>
+        //     <div class="ticket-lock">
+        //         <i class="fa-solid fa-lock"></i>
+        //     </div>
+        // `
 
-        mainCont.appendChild(ticketCont)
+        // mainCont.appendChild(ticketCont)
 
+        createTicket(ticketId, ticketColor, taskText)
+
+        
         //After createing the ticket, make the modal container hidden.
         modalCont.style.display = "none"
         isModalVisible = false
 
         taskArea.value = ""
-
-        //Handle lock for this ticket.
-        handleLock(ticketCont)
-
-        handleTicketColor(ticketCont)
     }
 })
 
@@ -124,11 +124,11 @@ function handleTicketColor(ticket) {
     })
 }
 
-toolBoxPriorityColors.forEach(function(color) {
-    color.addEventListener("click", function() {
+toolBoxPriorityColors.forEach(function(colorElem) {
+    colorElem.addEventListener("click", function() {
         let allTickets = document.querySelectorAll('.ticket-cont') // all the tickets in the document.
 
-        let selectedColor = color.classList[0] // the first element in the classList is the color of the div element.
+        let selectedColor = colorElem.classList[0] // the first element in the classList is the color of the div element.
         allTickets.forEach(function(ticket) {
             let ticketColorBand = ticket.querySelector('.ticket-color')
             if(ticketColorBand.style.backgroundColor === selectedColor) {
@@ -140,6 +140,56 @@ toolBoxPriorityColors.forEach(function(color) {
         })
     })
 }) 
+
+function createTicket(ticketId, ticketColor, ticketTask) {
+    let ticketCont = document.createElement('div')
+    ticketCont.setAttribute("class", "ticket-cont")
+
+    ticketCont.innerHTML = `
+            <div class="ticket-color" style="background-color: ${ticketColor}"></div>
+            <div class="ticket-id">${ticketId}</div>
+            <div class="task-area">${ticketTask}</div>
+            <div class="ticket-lock">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+        `
+
+    mainCont.append(ticketCont)
+
+    //Here we can store the ticket to the localStorage.
+    let ticketObject = {
+        id: ticketId,
+        ticketText: ticketTask,
+        color: ticketColor
+    }
+
+    ticketsArray.push(ticketObject)
+
+    console.log(ticketsArray)
+
+    localStorage.setItem("allTickets", JSON.stringify(ticketsArray)) // converting tickets array into string.
+
+
+     //Handle lock for this ticket.
+     handleLock(ticketCont)
+     handleTicketColor(ticketCont)
+}
+
+// On page reload, check if any data is present in the localStorage.
+// If yes, get the data then display on the page.
+function init() {
+    let ticketsData = localStorage.getItem("allTickets")
+
+    let ticketDataArray = JSON.parse(ticketsData)
+    for(let i = 0; i < ticketDataArray.length; i++) {
+        let ticketData = ticketDataArray[i]
+
+        createTicket(ticketData.id, ticketData.color, ticketData.ticketText)
+    }
+}
+
+init()
+
 
 
 /*
@@ -161,5 +211,19 @@ size = 100 => index : 0 to 99
 
 currentIndex = 99
 currentIndex + 1 = 100 % size = 0
+
+
+Local Storage - Browser provides some storage.
+Very small = ~5-10 MB
+
+Key - Value => String - String
+
+If we want to store an array/object in the localStorgage, 
+we need to convert it into String. 
+
+Serialization = Converting object into string format.
+DeSerialization = Converting string into an object type.
+
+10 MB = 10 * 10^6 Bytes
 
 */
